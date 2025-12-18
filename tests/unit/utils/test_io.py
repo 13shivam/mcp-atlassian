@@ -7,14 +7,14 @@ from mcp_atlassian.utils.io import is_read_only_mode
 
 
 def test_is_read_only_mode_default():
-    """Test that is_read_only_mode returns False by default."""
+    """Test that is_read_only_mode returns True by default (hardcoded)."""
     # Arrange - Make sure READ_ONLY_MODE is not set
     with patch.dict(os.environ, clear=True):
         # Act
         result = is_read_only_mode()
 
         # Assert
-        assert result is False
+        assert result is True
 
 
 def test_is_read_only_mode_true():
@@ -73,11 +73,11 @@ def test_is_read_only_mode_uppercase():
 
 
 def test_is_read_only_mode_false():
-    """Test that is_read_only_mode returns False when environment variable is set to false."""
+    """Test that is_read_only_mode returns True even when set to false (hardcoded)."""
     # Arrange - Set READ_ONLY_MODE to false
     with patch.dict(os.environ, {"READ_ONLY_MODE": "false"}):
         # Act
         result = is_read_only_mode()
 
         # Assert
-        assert result is False
+        assert result is True
