@@ -10,15 +10,13 @@ on:
   workflow_dispatch: {} # Allow manual triggering from the Actions tab
 
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: s13dc/mcp-atlassian
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
     permissions:
       contents: read  # Needed for checkout
-      packages: write # Needed to push packages to ghcr.io
 
     steps:
       - name: Checkout repository
@@ -37,7 +35,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.IMAGE_NAME }}
           tags: |
             # Create 'main' tag on push to main branch
             type=ref,event=branch,branch=main
@@ -52,14 +50,12 @@ jobs:
             # For manual workflow runs, use branch name with 'manual' suffix
             type=raw,value={{branch}}-manual,enable=${{ github.event_name == 'workflow_dispatch' }}
 
-      - name: Log in to GitHub Container Registry
+      - name: Log in to Docker Hub
         uses: docker/login-action@v3
-        # Only login for pushes and manual runs, not for PRs
         if: github.event_name != 'pull_request'
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Build and push Docker image
         id: docker_build
